@@ -14,7 +14,7 @@ export default function RelatedPost() {
   const relatedNewsletters = mockNewsletters.slice(0, 3);
 
   return (
-    <section className="w-full text-black border-2 border-green-500 py-8">
+    <section className="w-full text-black py-8">
       <div className="w-full flex justify-center">
         <div className="w-full max-w-[1309px] flex flex-col px-4 items-center">
           <div

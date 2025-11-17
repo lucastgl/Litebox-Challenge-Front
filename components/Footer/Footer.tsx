@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 const socials = [
   { href: "#", label: "LinkedIn", icon: "/icons/LinkedIn.svg" },
@@ -7,8 +10,11 @@ const socials = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isNewsletterDetail = pathname?.startsWith("/newsletter/");
+
   return (
-    <footer className="w-full flex justify-center bg-black py-10 mt-auto">
+    <footer className={`w-full flex justify-center ${isNewsletterDetail ? "bg-white" : "bg-black"} py-10 mt-auto`}>
       <div className="w-[1328px] h-[267px] bg-[#9C73F7] flex flex-col justify-between px-[119px] py-[96px]">
         <div className="flex items-center justify-between w-full max-w-[1090px] h-[74px]">
           <div className="flex items-center gap-3 text-white">
