@@ -30,11 +30,17 @@ const mostViewedItems = [
   },
 ] as const;
 
-export default function MostViewed() {
+interface MostViewedProps {
+  variant?: "light" | "dark";
+}
+
+export default function MostViewed({ variant = "light" }: MostViewedProps) {
+  const titleColorClass = variant === "dark" ? "text-gray-900" : "text-white";
+  
   return (
-    <aside className="hidden lg:block w-[304px] flex-shrink-0">
+    <aside className="hidden lg:block w-[304px] shrink-0">
       {/* Apartado 1: Título */}
-      <h2 className="text-xl font-semibold mb-[40px]">Most viewed</h2>
+      <h2 className={`text-xl font-semibold mb-[40px] ${titleColorClass}`}>Most viewed</h2>
 
       {/* Apartado 2: Lista de componentes */}
       <div className="flex flex-col gap-[13px]">

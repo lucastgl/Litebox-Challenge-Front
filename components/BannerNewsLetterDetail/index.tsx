@@ -16,7 +16,7 @@ export default function BannerNewsLetterDetail() {
   };
 
   return (
-    <section className="w-full border-2 border-red-500">
+    <section className="w-full">
       <div
         className="w-full h-[677px] overflow-hidden bg-center bg-cover p-4 md:p-8 flex flex-col justify-center"
         style={{ backgroundImage: 'url("/exampleBannerToday.png")' }}
