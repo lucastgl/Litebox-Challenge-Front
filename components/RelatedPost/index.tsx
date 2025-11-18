@@ -80,7 +80,7 @@ export default function RelatedPost() {
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalContent />
+        <ModalContent onClose={closeModal} />
       </Modal>
     </section>
   );

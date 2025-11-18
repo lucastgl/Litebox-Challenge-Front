@@ -53,7 +53,7 @@ export default function BannerIntermedio() {
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalContent />
+        <ModalContent onClose={closeModal} />
       </Modal>
     </>
   );

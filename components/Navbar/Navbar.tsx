@@ -61,7 +61,7 @@ export default function Navbar() {
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalContent />
+        <ModalContent onClose={closeModal} />
       </Modal>
     </>
   );

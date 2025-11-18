@@ -1,14 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Newsletter } from "@/types/newsletter";
 import { usePosts } from "@/hooks/usePosts";
 import { mapPostToNewsletter } from "@/types/newsletter";
 import { useTopicsStore } from "@/store/topicsStore";
 import NewsLetterCard from "@/components/NewsLetterCard/NewsLetterCard";
 import BannerIntermedio from "@/components/BannerIntermedio/BannerIntermedio";
+import { Button } from "@heroui/button";
 
 export default function NewsLetterGrid() {
+  // Estado para controlar cuántas newsletters mostrar (inicialmente 9)
+  const [displayedCount, setDisplayedCount] = useState<number>(9);
+  
   // Obtener posts desde la API del backend
   const { posts, loading, error } = usePosts();
   
@@ -39,7 +43,22 @@ export default function NewsLetterGrid() {
     return mapped.filter((newsletter) => newsletter.category === selectedTopic);
   }, [posts, selectedTopic]);
 
-  const groups = groupNewsletters(newsletters);
+  // Resetear el contador cuando cambia el filtro de topic
+  useEffect(() => {
+    setDisplayedCount(9);
+  }, [selectedTopic]);
+
+  // Limitar las newsletters a mostrar
+  const displayedNewsletters = newsletters.slice(0, displayedCount);
+  const groups = groupNewsletters(displayedNewsletters);
+  
+  // Verificar si hay más newsletters para mostrar
+  const hasMore = newsletters.length > displayedCount;
+  
+  // Función para cargar más newsletters (9 más cada vez)
+  const handleLoadMore = () => {
+    setDisplayedCount((prev) => prev + 9);
+  };
 
   // Mostrar estado de carga
   if (loading) {
@@ -170,6 +189,26 @@ export default function NewsLetterGrid() {
           );
         })}
       </div>
+      
+      {/* Botón Load more - solo se muestra si hay más newsletters */}
+      {hasMore && (
+        <div className="w-full flex justify-center mt-6">
+          <Button
+            onClick={handleLoadMore}
+            className="bg-lemonGreen text-black border border-black rounded-none font-semibold hover:bg-lemonGreen/90"
+            radius="none"
+            style={{
+              width: "155px",
+              height: "56px",
+              gap: "10px",
+              paddingTop: "5px",
+              paddingBottom: "5px",
+            }}
+          >
+            Load more
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
