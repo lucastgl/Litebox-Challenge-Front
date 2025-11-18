@@ -1,28 +1,42 @@
+"use client";
+
 import Image from "next/image";
 import { Space_Grotesk } from "next/font/google";
+import { PostDetailFromAPI } from "@/hooks/usePostDetail";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-export default function BannerNewsLetterDetail() {
-  const customNewsletter = {
-    id: "1",
-    title: "Your Kid May Already Be Watching AI-Generated Videos on YouTube",
-    category: "Tech companies",
-    readTime: "6 mins",
-    image: "/exampleBG.png",
-  };
+interface BannerNewsLetterDetailProps {
+  post: PostDetailFromAPI;
+}
+
+export default function BannerNewsLetterDetail({ post }: BannerNewsLetterDetailProps) {
+  // Formatear readTime: convertir el número a string con formato "X mins"
+  const formattedReadTime = `${post.attributes.readTime || 6} mins`;
+
+  // Construir la URL de la imagen de fondo
+  const coverImageUrl = post.attributes.coverImg?.data?.attributes?.url;
+  let backgroundImageUrl = "/exampleBannerToday.png"; // Imagen por defecto
+
+  if (coverImageUrl) {
+    if (coverImageUrl.startsWith("http")) {
+      backgroundImageUrl = coverImageUrl;
+    } else {
+      backgroundImageUrl = `https://lite-tech-api.litebox.ai${coverImageUrl}`;
+    }
+  }
 
   return (
     <section className="w-full">
       <div
         className="w-full h-[677px] overflow-hidden bg-center bg-cover p-4 md:p-8 flex flex-col justify-center"
-        style={{ backgroundImage: 'url("/exampleBannerToday.png")' }}
+        style={{ backgroundImage: `url("${backgroundImageUrl}")` }}
       >
         {/* Author section */}
-        <div className="flex items-center gap-3 mb-4 md:mb-0 bg-white  w-fit p-4">
+        <div className="flex items-center gap-3 mb-4 md:mb-0 bg-white w-fit p-4">
           <Image
             src="/author.png"
             alt="Author"
@@ -40,7 +54,7 @@ export default function BannerNewsLetterDetail() {
               letterSpacing: "0px",
             }}
           >
-            By Natsu Kim
+            By {post.attributes.author}
           </span>
         </div>
         
@@ -50,7 +64,7 @@ export default function BannerNewsLetterDetail() {
             <h3
               className={`${spaceGrotesk.className} font-bold text-[35px] leading-[120%] tracking-normal pb-2`}
             >
-              {customNewsletter.title}
+              {post.attributes.title}
             </h3>
 
             <div className="flex items-center text-sm mt-auto">
@@ -62,7 +76,7 @@ export default function BannerNewsLetterDetail() {
                   height={16}
                   style={{ filter: "invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%)" }}
                 />
-                <span>{customNewsletter.readTime}</span>
+                <span>{formattedReadTime}</span>
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Newsletter } from "@/mocks/newsletters";
+import { Newsletter } from "@/types/newsletter";
 import { Space_Grotesk } from "next/font/google";
 
 const spaceGrotesk = Space_Grotesk({

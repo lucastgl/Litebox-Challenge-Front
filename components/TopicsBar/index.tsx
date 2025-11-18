@@ -1,24 +1,36 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Chip } from "@heroui/chip";
 import Image from "next/image";
-import { mockNewsletters } from "@/mocks/newsletters";
+import { useTopicsStore } from "@/store/topicsStore";
 
 export default function TopicsBar() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  // Obtener topics y selectedTopic del store global
+  const topics = useTopicsStore((state) => state.topics);
+  const selectedTopic = useTopicsStore((state) => state.selectedTopic);
+  const setSelectedTopic = useTopicsStore((state) => state.setSelectedTopic);
 
+  // Agregar "All" al inicio de la lista de categories
   const categories = useMemo(() => {
-    const unique = Array.from(new Set(mockNewsletters.map((n) => n.category)));
-    return ["All", ...unique];
-  }, []);
+    return ["All", ...topics];
+  }, [topics]);
 
   const handleSelect = (category: string) => {
-    if (selectedCategory === category) {
-      setSelectedCategory("All");
+    // Si se selecciona "All", establecer selectedTopic a null
+    if (category === "All") {
+      setSelectedTopic(null);
       return;
     }
-    setSelectedCategory(category);
+
+    // Si se hace click en el mismo topic, deseleccionar (volver a "All")
+    if (selectedTopic === category) {
+      setSelectedTopic(null);
+      return;
+    }
+
+    // Seleccionar el nuevo topic
+    setSelectedTopic(category);
   };
 
   return (
@@ -35,7 +47,10 @@ export default function TopicsBar() {
           >
             <span className="text-base font-semibold text-white flex-shrink-0">Topics</span>
             {categories.map((category) => {
-              const isSelected = selectedCategory === category;
+              // "All" está seleccionado cuando selectedTopic es null
+              const isSelected = category === "All" 
+                ? selectedTopic === null 
+                : selectedTopic === category;
 
               return (
                 <Chip
@@ -78,7 +93,10 @@ export default function TopicsBar() {
               }}
             >
               {categories.map((category) => {
-                const isSelected = selectedCategory === category;
+                // "All" está seleccionado cuando selectedTopic es null
+                const isSelected = category === "All" 
+                  ? selectedTopic === null 
+                  : selectedTopic === category;
 
                 return (
                   <Chip
