@@ -1,8 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { mockNewsletters } from "@/mocks/newsletters";
 import NewsLetterArticle from "@/components/NewsLetterCard/NewsLetterArticle";
 import { Space_Grotesk } from "next/font/google";
+import Modal from "@/components/Modal";
+import ModalContent from "@/components/ModalContent/ModalContent";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -10,8 +15,11 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export default function RelatedPost() {
-  // Tomar los primeros 3 newsletters como relacionados
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const relatedNewsletters = mockNewsletters.slice(0, 3);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <section className="w-full text-black py-8">
@@ -22,6 +30,7 @@ export default function RelatedPost() {
           >
             <h2 className="text-2xl font-bold">Related Posts</h2>
             <button
+              onClick={openModal}
               className="flex items-center gap-2 text-mainPurple hover:opacity-80 transition-opacity"
               style={{
                 fontWeight: 600,
@@ -68,6 +77,11 @@ export default function RelatedPost() {
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <ModalContent />
+      </Modal>
     </section>
   );
 }
