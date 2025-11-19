@@ -36,8 +36,8 @@ export default function BannerIntermedio() {
           </p>
 
           <Button
-            onClick={openModal}
-            className="bg-lemonGreen text-black font-semibold rounded-none w-[247px] md:w-auto h-[56px] md:h-11 md:px-8"
+            onPress={openModal}
+            className="bg-lemonGreen text-black font-semibold rounded-none w-[247px] md:w-auto h-[56px] md:h-11 md:px-8 border-0 hover:bg-black hover:text-white hover:border-0 focus:bg-lemonGreen focus:text-black focus:border focus:border-black active:bg-black active:text-white active:border-0 disabled:bg-gray-300 disabled:text-gray-600 disabled:opacity-100 disabled:border-0"
             style={{
               gap: "10px",
               paddingTop: "5px",

@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Space_Grotesk } from "next/font/google";
-import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 
 const spaceGrotesk = Space_Grotesk({
@@ -28,9 +27,9 @@ export default function ModalContent({ onClose }: ModalContentProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Nota: El contenido de newPost.txt está disponible pero no se envía en el POST
-  // ya que el DTO del backend solo acepta title e image
-  // Si en el futuro se necesita enviar el contenido, se debe actualizar el DTO
+  // Nota: El contenido de newPost.txt se lee en el backend desde Firebase
+  // El DTO del backend solo acepta title y coverImageUrl
+  // El backend lee automáticamente newPost.txt y lo asigna al body del post
 
   // Limpiar el intervalo y la URL de la imagen al desmontar el componente
   useEffect(() => {
@@ -172,14 +171,15 @@ export default function ModalContent({ onClose }: ModalContentProps) {
       const imageDataUrl = await fileToDataUrl(selectedImageFile);
 
       // Enviar POST al backend
-      const response = await fetch("http://localhost:3001/api/posts/related", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      const response = await fetch(`${apiUrl}/api/post/related`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: postTitle.trim(),
-          image: imageDataUrl, // Enviar como data URL
+          coverImageUrl: imageDataUrl, // Enviar como data URL con el nombre correcto del DTO
         }),
       });
 
@@ -228,58 +228,106 @@ export default function ModalContent({ onClose }: ModalContentProps) {
         className="hidden"
       />
 
-      {/* Título */}
-      <h2
-        className={`
-          text-[35px]
-          leading-[120%]
-          font-medium
-          text-center
-          text-gray-900
-          ${spaceGrotesk.className}
-        `}
-        style={{
-          letterSpacing: "0px",
-          fontStyle: "normal",
-          fontWeight: 500,
-        }}
-      >
-        Upload your post
-      </h2>
-      
-      {/* Descripción */}
-      <p className="text-sm md:text-base text-gray-600 text-center max-w-md">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse commodo libero.
-      </p>
-      
-      {/* Input */}
-      <Input
-        value={postTitle}
-        onChange={(e) => setPostTitle(e.target.value)}
-        placeholder="Post Title"
-        classNames={{
-          base: "w-[400px]",
-          input: "bg-white border-t border-b border-black rounded-none h-[56px] placeholder:text-darkGray",
-          inputWrapper: `bg-white border rounded-none hover:border-black focus-within:border-black h-[56px] ${
-            showTitleError ? "border-red-500" : "border-black"
-          }`,
-        }}
-        variant="bordered"
-        radius="none"
-        style={{
-          width: "400px",
-          height: "56px",
-        }}
-      />
-      
-      {/* Barra de progreso (se muestra mientras se carga o cuando fue exitoso) */}
-      {(isUploading || isUploadSuccessful) && (
-        <div className="w-[400px] bg-lemonGreen p-4 flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            {isUploadSuccessful ? (
-              <div className="flex items-center gap-2">
-                <span className="text-black font-semibold">Upload successful</span>
-                {/* Checkmark icon */}
+      {/* Contenido normal del modal (oculto cuando hay éxito) */}
+      {!submitSuccess && (
+        <>
+          {/* Título */}
+          <h2
+            className={`
+              text-[35px]
+              leading-[120%]
+              font-medium
+              text-center
+              text-gray-900
+              ${spaceGrotesk.className}
+            `}
+            style={{
+              letterSpacing: "0px",
+              fontStyle: "normal",
+              fontWeight: 500,
+            }}
+          >
+            Upload your post
+          </h2>
+          
+          {/* Descripción */}
+          <p className="text-sm md:text-base text-gray-600 text-center max-w-md">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse commodo libero.
+          </p>
+          
+          {/* Input nativo */}
+          <input
+            type="text"
+            value={postTitle}
+            onChange={(e) => setPostTitle(e.target.value)}
+            placeholder="Post Title"
+            className={`w-[400px] h-[56px] bg-white border rounded-none px-4 text-black placeholder:text-darkGray focus:outline-none focus:border-black hover:border-black ${
+              showTitleError ? "border-red-500" : "border-black"
+            }`}
+            style={{
+              width: "400px",
+              height: "56px",
+            }}
+          />
+          
+          {/* Barra de progreso (se muestra mientras se carga o cuando fue exitoso) */}
+          {(isUploading || isUploadSuccessful) && (
+            <div className="w-[400px] bg-lemonGreen p-4 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                {isUploadSuccessful ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-black font-semibold">Upload successful</span>
+                    {/* Checkmark icon */}
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M13.3333 4L6 11.3333L2.66667 8"
+                        stroke="black"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                ) : (
+                  <>
+                    <span className="text-black font-semibold">
+                      Loading image {Math.round(uploadProgress)}%
+                    </span>
+                    <button
+                      onClick={cancelUpload}
+                      className="text-black font-semibold hover:underline"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </div>
+              <div className="w-full h-2 bg-gray-300 rounded-none overflow-hidden border border-black">
+                <div
+                  className="h-full bg-black transition-all duration-200 rounded-none"
+                  style={{ width: `${isUploadSuccessful ? 100 : uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+          
+          {/* Botón Upload image (solo se muestra si no se está cargando y no fue exitoso) */}
+          {!isUploading && !isUploadSuccessful && (
+            <Button
+              onPress={handleUploadClick}
+              className="bg-lemonGreen text-black border border-black rounded-none font-semibold hover:bg-lemonGreen/90"
+              radius="none"
+              style={{
+                width: "400px",
+                height: "56px",
+              }}
+              endContent={
                 <svg
                   width="16"
                   height="16"
@@ -288,77 +336,66 @@ export default function ModalContent({ onClose }: ModalContentProps) {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M13.3333 4L6 11.3333L2.66667 8"
-                    stroke="black"
+                    d="M8 12V4M4 8L8 4L12 8"
+                    stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 </svg>
-              </div>
-            ) : (
-              <>
-                <span className="text-black font-semibold">
-                  Loading image {Math.round(uploadProgress)}%
-                </span>
-                <button
-                  onClick={cancelUpload}
-                  className="text-black font-semibold hover:underline"
-                >
-                  Cancel
-                </button>
-              </>
-            )}
-          </div>
-          <div className="w-full h-2 bg-gray-300 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-black transition-all duration-200"
-              style={{ width: `${isUploadSuccessful ? 100 : uploadProgress}%` }}
-            />
-          </div>
-        </div>
-      )}
-      
-      {/* Botón Upload image (solo se muestra si no se está cargando y no fue exitoso) */}
-      {!isUploading && !isUploadSuccessful && (
-        <Button
-          onClick={handleUploadClick}
-          className="bg-lemonGreen text-black border border-black rounded-none font-semibold hover:bg-lemonGreen/90"
-          radius="none"
-          style={{
-            width: "400px",
-            height: "56px",
-          }}
-          endContent={
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+              }
             >
-              <path
-                d="M8 12V4M4 8L8 4L12 8"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          }
-        >
-          Upload image
-        </Button>
+              Upload image
+            </Button>
+          )}
+
+          {/* Mensaje de error (solo se muestra si hay error y no hay éxito) */}
+          {submitError && (
+            <p className="text-red-500 font-semibold text-center w-[400px]">
+              Error uploading post
+            </p>
+          )}
+
+          {/* Botón Confirm (solo se muestra si no hay éxito) */}
+          <Button
+            onPress={handleConfirm}
+            disabled={isSubmitting || !validateForm()}
+            className="bg-black text-white border border-black rounded-none font-semibold hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+            radius="none"
+            style={{
+              width: "132px",
+              height: "56px",
+              paddingTop: "5px",
+              paddingBottom: "5px",
+            }}
+          >
+            {isSubmitting ? "Submitting..." : "Confirm"}
+          </Button>
+        </>
       )}
-      
+
       {/* Mensaje de éxito después de confirmar */}
       {submitSuccess && (
         <div className="w-[400px] flex flex-col items-center gap-4">
-          <p className="text-black font-semibold text-center">
+          <h2
+            className={`
+              text-[35px]
+              leading-[120%]
+              font-medium
+              text-center
+              text-gray-900
+              ${spaceGrotesk.className}
+            `}
+            style={{
+              letterSpacing: "0px",
+              fontStyle: "normal",
+              fontWeight: 500,
+            }}
+          >
             Your post was successfully uploaded!
-          </p>
+          </h2>
           <Button
-            onClick={handleDone}
+            onPress={handleDone}
             className="bg-black text-white border border-black rounded-none font-semibold hover:bg-gray-900"
             radius="none"
             style={{
@@ -371,31 +408,6 @@ export default function ModalContent({ onClose }: ModalContentProps) {
             Done
           </Button>
         </div>
-      )}
-
-      {/* Mensaje de error (solo se muestra si hay error y no hay éxito) */}
-      {submitError && !submitSuccess && (
-        <p className="text-red-500 font-semibold text-center w-[400px]">
-          Error uploading post
-        </p>
-      )}
-
-      {/* Botón Confirm (solo se muestra si no hay éxito) */}
-      {!submitSuccess && (
-        <Button
-          onClick={handleConfirm}
-          disabled={isSubmitting || !validateForm()}
-          className="bg-black text-white border border-black rounded-none font-semibold hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
-          radius="none"
-          style={{
-            width: "132px",
-            height: "56px",
-            paddingTop: "5px",
-            paddingBottom: "5px",
-          }}
-        >
-          {isSubmitting ? "Submitting..." : "Confirm"}
-        </Button>
       )}
     </>
   );

@@ -49,7 +49,7 @@ interface UsePostDetailState {
 
 /**
  * Hook personalizado para obtener el detalle de un post por ID desde el backend
- * Consulta el endpoint GET /api/posts/:id del backend en localhost:3001
+ * Consulta el endpoint GET /api/posts/:id del backend
  * 
  * @param id - ID del post a obtener
  * @returns {UsePostDetailState} Objeto con post, estado de carga y errores
@@ -75,7 +75,8 @@ export function usePostDetail(id: string | number): UsePostDetailState {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`http://localhost:3001/api/posts/${id}`);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        const response = await fetch(`${apiUrl}/api/posts/${id}`);
 
         if (!response.ok) {
           if (response.status === 404) {

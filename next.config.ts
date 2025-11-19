@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         hostname: "lite-tech-api.litebox.ai",
         pathname: "/uploads/**",
       },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        pathname: "/**",
+      },
     ],
     // OPTIMIZACIÓN: Configurar formatos de imagen modernos para mejor compresión
     formats: ["image/avif", "image/webp"],

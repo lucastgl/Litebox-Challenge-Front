@@ -36,7 +36,7 @@ export default function BannerNewsLetterDetail({ post }: BannerNewsLetterDetailP
         style={{ backgroundImage: `url("${backgroundImageUrl}")` }}
       >
         {/* Author section */}
-        <div className="flex items-center gap-3 mb-4 md:mb-0 bg-white w-fit p-4">
+        <div className="flex items-center gap-3  md:mb-0 bg-white w-fit p-4">
           <Image
             src="/author.png"
             alt="Author"

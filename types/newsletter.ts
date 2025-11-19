@@ -39,12 +39,13 @@ export function mapPostToNewsletter(post: {
 
   // Construir la URL completa de la imagen
   // Si la URL no comienza con http, asumimos que es relativa a la API externa
+  // También maneja data URLs (base64) que comienzan con "data:"
   const imageUrl = post.attributes.coverImg?.data?.attributes?.url;
   let fullImageUrl = "/exampleBG.png"; // Imagen por defecto
 
   if (imageUrl) {
-    // Si la URL ya es completa (comienza con http/https), usarla directamente
-    if (imageUrl.startsWith("http")) {
+    // Si la URL ya es completa (comienza con http/https) o es una data URL (base64), usarla directamente
+    if (imageUrl.startsWith("http") || imageUrl.startsWith("data:")) {
       fullImageUrl = imageUrl;
     } else {
       // Si es relativa, construir la URL completa con el dominio de la API externa
