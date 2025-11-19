@@ -9,17 +9,24 @@ export default function LayoutWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isNewsletterDetail = pathname?.startsWith("/newsletter/");
 
   useEffect(() => {
-    if (isNewsletterDetail) {
-      document.body.classList.add("bg-white");
-      document.documentElement.classList.add("bg-white");
+    const isHome = pathname === "/" || pathname === undefined;
+    const bodyClassList = document.body.classList;
+    const htmlClassList = document.documentElement.classList;
+
+    if (isHome) {
+      bodyClassList.add("bg-black");
+      htmlClassList.add("bg-black");
+      bodyClassList.remove("bg-white");
+      htmlClassList.remove("bg-white");
     } else {
-      document.body.classList.remove("bg-white");
-      document.documentElement.classList.remove("bg-white");
+      bodyClassList.add("bg-white");
+      htmlClassList.add("bg-white");
+      bodyClassList.remove("bg-black");
+      htmlClassList.remove("bg-black");
     }
-  }, [isNewsletterDetail]);
+  }, [pathname]);
 
   return <>{children}</>;
 }

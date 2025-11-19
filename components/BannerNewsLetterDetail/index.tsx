@@ -60,14 +60,14 @@ export default function BannerNewsLetterDetail({ post }: BannerNewsLetterDetailP
         
         {/* NewsLetterArticle */}
         <div className="w-full md:w-[557px] md:h-[246px]">
-          <div className="bg-white text-black p-4 md:p-6 flex flex-col min-h-0 w-full h-full">
+          <div className="bg-white text-black p-4 md:p-6 flex flex-col min-h-0 w-full">
             <h3
               className={`${spaceGrotesk.className} font-bold text-[35px] leading-[120%] tracking-normal pb-2`}
             >
               {post.attributes.title}
             </h3>
 
-            <div className="flex items-center text-sm mt-auto">
+            <div className="flex items-center text-sm">
               <div className="inline-flex items-center gap-2 text-black/80">
                 <Image
                   src="/icons/Newspaper.svg"
