@@ -24,7 +24,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 border-b border-gray-200 dark:border-gray-800">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 dark:border-gray-800">
         <div className={`w-full flex justify-center py-4 ${spaceGrotesk.className}`}>
           <div className="w-full max-w-[327px] md:max-w-[1309px] flex items-center justify-between px-4 md:px-0">
           {isDetailPage ? (
